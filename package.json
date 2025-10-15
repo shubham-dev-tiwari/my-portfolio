@@ -1,0 +1,27 @@
+{
+  "name": "shubham-dev-tiwari",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^3.12.1",
+    "framer-motion": "^11.2.10",
+    "next": "^14.2.5",
+    "react": "18",
+    "react-dom": "18",
+    "lucide-react": "latest",
+    "react-type-animation": "^3.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "10.0.1",
+    "eslint": "8",
+    "eslint-config-next": "14.1.0",
+    "postcss": "8",
+    "tailwindcss": "3.3.0"
+  }
+}
