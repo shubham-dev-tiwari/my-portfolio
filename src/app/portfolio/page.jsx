@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Play, Info, ExternalLink, Star, TrendingUp, Code2, Sparkles, Zap, Shield, Film, Car, MessageSquare, Hash, BarChart3, FileText, Hotel, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 const projects = [
   {
@@ -98,7 +99,7 @@ const projects = [
     tagline: "Text Analysis Tool",
     desc: "Powerful text analysis tool with word counting, character counting, reading time estimation, and keyword density analysis. Clean and minimal UI.",
     img: "/word.png",
-    link: "https://github.com/shubham-dev-tiwari/word-counter",
+    link: "https://word-counter-two-delta.vercel.app/",
     category: "Utility",
     tech: ["JavaScript", "HTML", "CSS"],
     year: "2023",
@@ -122,7 +123,7 @@ const projects = [
     tagline: "Professional Invoicing Tool",
     desc: "Simple and efficient invoice generator web application designed to streamline the process of creating and managing professional invoices with PDF export.",
     img: "/invoice.jpg",
-    link: "https://github.com/shubham-dev-tiwari/invoice-genrator",
+    link: "https://invoice-genrator-tawny.vercel.app/",
     category: "Utility",
     tech: ["React", "PDF.js", "Forms"],
     year: "2023",
@@ -486,12 +487,14 @@ const PortfolioPage = () => {
               >
                 {/* Image - OBJECT-COVER APPLIED */}
                 <div className="relative h-40 sm:h-48 overflow-hidden">
-                  <img
-                    src={project.img}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                  <Image 
+  src={project.img} 
+  alt={project.title} 
+  width={600} 
+  height={400}
+  priority={index < 3}
+/>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-40" />
 
                   {/* Hover Overlay */}
                   <AnimatePresence>

@@ -17,8 +17,8 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://shubhamtiwari.dev",
-    title: "Shubham Tiwari - Full Stack Developer",
+    url: "https://shubham-dev-tiwari.vercel.app",
+    title: "Shubham Tiwari - Web Developer",
     description: "Full Stack Developer crafting exceptional digital experiences with modern technologies",
     siteName: "Shubham Tiwari Portfolio",
   },

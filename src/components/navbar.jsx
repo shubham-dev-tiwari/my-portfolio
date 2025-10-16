@@ -13,7 +13,8 @@ import {
   Github,
   Linkedin,
   Download,
-  Sparkles
+  Sparkles,
+  Gamepad2
 } from "lucide-react";
 
 // Constants moved outside component for optimization
@@ -21,6 +22,7 @@ const LINKS = [
   { url: "/", title: "Home", Icon: Home },
   { url: "/about", title: "About", Icon: User },
   { url: "/portfolio", title: "Portfolio", Icon: Briefcase },
+   { url: "/devlife", title: "Dev Life", Icon: Gamepad2 }, // ADD THIS
   { url: "/contact", title: "Contact", Icon: Mail }
 ];
 
