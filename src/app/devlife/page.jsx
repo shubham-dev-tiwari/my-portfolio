@@ -1,112 +1,85 @@
 "use client";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { 
   Coffee, Bug, Terminal, Code2, Zap, Heart, Trophy, Flame, Shield, Rocket, Brain, 
   Sparkles, Star, Clock, Award, ChevronRight, RotateCcw, Share2, Volume2, VolumeX, 
   Dice5, GitBranch, Database, Package, Lightbulb, Wrench, CheckCircle, XCircle, 
   PartyPopper, TrendingUp, Laptop, Server, Lock, FileCode, GitCommit, Smile, Frown, 
-  Eye, Target, Sword, Crown, Gauge, Flame as Fire, Zap as Lightning, BadgeCheck,
-  AlertTriangle, ThumbsUp, ThumbsDown, MessageSquare, Send, Download, Upload,
-  Cake, Pizza, Beer, CloudRain, Sun, Moon, Wifi, WifiOff, Loader  // ADD THIS
+  Eye, Target, Sword, Crown, Gauge, AlertTriangle, ThumbsUp, ThumbsDown, MessageSquare, 
+  Send, Download, Upload, Cake, Pizza, Beer, CloudRain, Sun, Moon, Wifi, WifiOff, Loader
 } from "lucide-react";
 
-// 🎭 50+ EPIC DEVELOPER JOKES (Expanded!)
+// 🎭 SARCASTIC FEATURES BANNER DATA
+const SARCASTIC_FEATURES = [
+  { text: "It's not a bug", subtext: "It's an undocumented feature! 🐛✨", icon: Bug },
+  { text: "It's not a crash", subtext: "It's a surprise restart! 💥🔄", icon: AlertTriangle },
+  { text: "It's not slow", subtext: "It's giving you time to think! 🐢💭", icon: Clock },
+  { text: "It's not broken", subtext: "It's just differently functional! 🔨🎨", icon: Wrench },
+  { text: "It's not a memory leak", subtext: "It's RAM appreciation day! 💾🎉", icon: Server },
+  { text: "It's not unresponsive", subtext: "It's meditation mode! 🧘‍♂️⏳", icon: Loader },
+  { text: "It's not outdated", subtext: "It's vintage code! 📼👴", icon: Package },
+  { text: "It's not spaghetti code", subtext: "It's Italian architecture! 🍝🏛️", icon: Code2 }
+];
+
+// 🎭 52 EPIC DEVELOPER JOKES
 const JOKES_DATABASE = [
-  // Classic Jokes
   { id: 1, text: "Why do programmers prefer dark mode?", punchline: "Because light attracts bugs! 🐛", category: "Classic", icon: Bug, difficulty: "Easy" },
   { id: 2, text: "How many programmers does it take to change a lightbulb?", punchline: "None, that's a hardware problem! 💡", category: "Classic", icon: Lightbulb, difficulty: "Easy" },
   { id: 3, text: "Why do Java developers wear glasses?", punchline: "Because they can't C#! 👓", category: "Languages", icon: Code2, difficulty: "Medium" },
   { id: 4, text: "What's a programmer's favorite hangout?", punchline: "The Foo Bar! 🍺", category: "Classic", icon: Beer, difficulty: "Easy" },
-  
-  // Debugging Nightmares
   { id: 5, text: "99 little bugs in the code...", punchline: "Take one down, patch it around... 127 little bugs in the code! 😭", category: "Debugging", icon: Bug, difficulty: "Hard" },
   { id: 6, text: "Debugging:", punchline: "Being a detective in a crime movie where you're also the murderer! 🕵️", category: "Debugging", icon: Bug, difficulty: "Medium" },
   { id: 7, text: "My code doesn't work...", punchline: "I have no idea why! Then it works... I have no idea why! 😂", category: "Debugging", icon: Bug, difficulty: "Hard" },
-  
-  // Network & Infrastructure
   { id: 8, text: "There's no place like...", punchline: "127.0.0.1 🏠", category: "Network", icon: Wifi, difficulty: "Easy" },
   { id: 9, text: "I would tell you a UDP joke...", punchline: "But you might not get it! 📡", category: "Network", icon: Server, difficulty: "Medium" },
   { id: 10, text: "I've got a really good UDP joke...", punchline: "But I don't know if you'll get it! 📡", category: "Network", icon: CloudRain, difficulty: "Medium" },
-  
-  // Database Humor
   { id: 11, text: "A SQL query walks into a bar...", punchline: "Walks up to two tables and asks: 'Can I JOIN you?' 🤝", category: "Database", icon: Database, difficulty: "Medium" },
   { id: 12, text: "SELECT * FROM users WHERE clue > 0", punchline: "0 rows returned 😅", category: "Database", icon: Database, difficulty: "Easy" },
-  
-  // Dev Life Sarcasm
   { id: 13, text: "Programmer (noun):", punchline: "An organism that turns caffeine into code! ☕→💻", category: "Sarcasm", icon: Coffee, difficulty: "Easy" },
   { id: 14, text: "Programming is like love...", punchline: "One mistake and you support it for life! 💕", category: "Sarcasm", icon: Heart, difficulty: "Hard" },
   { id: 15, text: "My code is so clean...", punchline: "...said no developer ever! 🗑️", category: "Sarcasm", icon: Code2, difficulty: "Easy" },
   { id: 16, text: "I'm not lazy...", punchline: "I'm just on energy-saving mode! ⚡", category: "Motivation", icon: Zap, difficulty: "Easy" },
-  
-  // Math & Logic
   { id: 17, text: "Why do programmers always mix up Halloween and Christmas?", punchline: "Because Oct 31 == Dec 25! 🎃🎄", category: "Math", icon: Code2, difficulty: "Hard" },
   { id: 18, text: "The best thing about a Boolean...", punchline: "Even if you're wrong, you're only off by a bit! 🔢", category: "Logic", icon: Code2, difficulty: "Medium" },
   { id: 19, text: "A programmer's wife tells him:", punchline: "'Go buy bread. If they have eggs, get a dozen.' He returns with 12 loaves! 🍞", category: "Logic", icon: Brain, difficulty: "Hard" },
   { id: 20, text: "To understand recursion...", punchline: "You must first understand recursion! 🔄", category: "Programming", icon: RotateCcw, difficulty: "Medium" },
-  
-  // Git & Version Control
   { id: 21, text: "Git commit -m 'Fixed bug'", punchline: "*Creates 5 new bugs* 'This is fine' 🔥", category: "Git", icon: GitBranch, difficulty: "Medium" },
   { id: 22, text: "git push --force", punchline: "Famous last words of every developer! 💀", category: "Git", icon: GitCommit, difficulty: "Hard" },
-  
-  // Security
   { id: 23, text: "My password is so secure...", punchline: "...even I can't remember it! 🔐", category: "Security", icon: Lock, difficulty: "Medium" },
   { id: 24, text: "Two-factor authentication:", punchline: "Because one password to remember wasn't enough! 😤", category: "Security", icon: Shield, difficulty: "Easy" },
-  
-  // NPM & Dependencies
   { id: 25, text: "npm install happiness", punchline: "Error: Cannot find module 'life' 💔", category: "NPM", icon: Package, difficulty: "Medium" },
   { id: 26, text: "node_modules folder:", punchline: "The heaviest object in the universe! 🌌", category: "NPM", icon: Package, difficulty: "Easy" },
-  
-  // DevOps
   { id: 27, text: "It works on my machine!", punchline: "Then we'll ship your machine! 📦", category: "DevOps", icon: Laptop, difficulty: "Easy" },
   { id: 28, text: "Docker: Because...", punchline: "'It works on my machine' wasn't good enough! 🐳", category: "DevOps", icon: Shield, difficulty: "Medium" },
-  
-  // Linux & Command Line
   { id: 29, text: "sudo rm -rf my-problems", punchline: "Permission denied... story of my life! 😔", category: "Linux", icon: Terminal, difficulty: "Medium" },
   { id: 30, text: "sudo make me a sandwich", punchline: "Okay. *makes sandwich* 🥪", category: "Linux", icon: Terminal, difficulty: "Easy" },
-  
-  // Coffee Culture
   { id: 31, text: "I don't need coffee...", punchline: "I need semicolons! Actually... I need both ☕", category: "Coffee", icon: Coffee, difficulty: "Easy" },
   { id: 32, text: "I code therefore I am...", punchline: "...caffeinated! ☕", category: "Coffee", icon: Coffee, difficulty: "Easy" },
   { id: 33, text: "Decaf coffee:", punchline: "The developer's biggest fear! 😱", category: "Coffee", icon: Coffee, difficulty: "Easy" },
-  
-  // Tech Humor
   { id: 34, text: "Why did the developer go broke?", punchline: "Because they used up all their cache! 💸", category: "Tech", icon: Server, difficulty: "Medium" },
   { id: 35, text: "Eight bytes walk into a bar...", punchline: "The bartender asks: 'What will it be?' One says: 'Make us a double!' 🍺", category: "Tech", icon: Beer, difficulty: "Hard" },
   { id: 36, text: "Life without barriers...", punchline: "Would be just .io! 🌐", category: "Tech", icon: Sparkles, difficulty: "Medium" },
-  
-  // JavaScript Madness
   { id: 37, text: "How do you comfort a JavaScript bug?", punchline: "You console it! 🤗", category: "JavaScript", icon: Terminal, difficulty: "Easy" },
   { id: 38, text: "[] + [] in JavaScript:", punchline: "''  ...Makes perfect sense! 🤪", category: "JavaScript", icon: Code2, difficulty: "Hard" },
   { id: 39, text: "typeof NaN", punchline: "'number' ...JavaScript logic! 🤯", category: "JavaScript", icon: Brain, difficulty: "Hard" },
-  
-  // Code Quality
   { id: 40, text: "// TODO: Fix this", punchline: "Narrator: They never fixed it. 📝", category: "Sarcasm", icon: FileCode, difficulty: "Medium" },
   { id: 41, text: "// This code is perfect", punchline: "...said by someone who's never seen it run. 😅", category: "Sarcasm", icon: Code2, difficulty: "Easy" },
   { id: 42, text: "Code review comment:", punchline: "'LGTM' (Let's Get This Merged - didn't actually look) 👀", category: "Sarcasm", icon: Eye, difficulty: "Medium" },
-  
-  // Meetings & Management
   { id: 43, text: "The best code:", punchline: "Is code never written! ...Because meetings! 📅", category: "Sarcasm", icon: Clock, difficulty: "Easy" },
   { id: 44, text: "Scrum Master:", punchline: "'Let's take this offline' *Never speaks of it again* 🙊", category: "Sarcasm", icon: MessageSquare, difficulty: "Medium" },
-  
-  // Nature & Bugs
   { id: 45, text: "Why do programmers hate nature?", punchline: "Too many bugs! 🐛🌲", category: "Classic", icon: Bug, difficulty: "Easy" },
   { id: 46, text: "Why did the developer quit?", punchline: "They didn't get arrays! 📊", category: "Sarcasm", icon: TrendingUp, difficulty: "Medium" },
-  
-  // AI & Future
   { id: 47, text: "ChatGPT writes better code...", punchline: "...than my code on Friday evening! 🤖", category: "AI", icon: Brain, difficulty: "Easy" },
   { id: 48, text: "Will AI replace developers?", punchline: "Not until AI learns to debug its own bugs! 🤖🐛", category: "AI", icon: Rocket, difficulty: "Medium" },
-  
-  // Random Tech
   { id: 49, text: "What's a programmer's favorite song?", punchline: "Hello World by Adele! 🎵", category: "Fun", icon: Sparkles, difficulty: "Easy" },
   { id: 50, text: "Why was the JavaScript developer sad?", punchline: "Because they didn't Node how to Express themselves! 😢", category: "JavaScript", icon: Server, difficulty: "Hard" },
-  
-  // Bonus Easter Eggs
   { id: 51, text: "404:", punchline: "Joke not found! (Ironically, this IS the joke) 🔍", category: "Classic", icon: AlertTriangle, difficulty: "Medium" },
   { id: 52, text: "CSS is awesome", punchline: "...when it's not Tuesday! 🎨", category: "CSS", icon: Sparkles, difficulty: "Easy" }
 ];
 
-// 🎮 12 ENHANCED REALISTIC DEV SCENARIOS
+// Continue to SECTION 2...
+// 🎮 12 REALISTIC DEV SCENARIOS
 const SCENARIOS = [
   {
     id: 1,
@@ -182,9 +155,7 @@ const SCENARIOS = [
     choices: [
       { text: "🎯 Refactor everything", consequence: "Day 4: Finally understand why it was THIS way. Complexity was necessary. Mind = Blown 🤯", effects: { sanity: -40, respect: +30, coffee: +10, xp: 70 }, icon: Brain, mood: "🤯" },
       { text: "📝 Add THE comment", consequence: "'// TODO: Refactor this' - Welcome to the tradition. Developers unite! 😂", effects: { sanity: +10, respect: -5, coffee: +1, xp: 10 }, icon: FileCode, mood: "😂" },
-      // ... (CONTINUING FROM PART 1)
-
-  { text: "🙈 Close file, forget it exists", consequence: "File? What file? We don't talk about that code. Ever. 🙈", effects: { sanity: +20, respect: -15, coffee: +2, xp: 15 }, icon: XCircle, mood: "🙈" }
+      { text: "🙈 Close file, forget it exists", consequence: "File? What file? We don't talk about that code. Ever. 🙈", effects: { sanity: +20, respect: -15, coffee: +2, xp: 15 }, icon: XCircle, mood: "🙈" }
     ]
   },
   {
@@ -256,7 +227,10 @@ const ACHIEVEMENTS = [
   { id: "burnout", name: "Burnout Speedrun", icon: Flame, description: "Lost all sanity in under 5 scenarios", xp: 50 }
 ];
 
+// Continue to SECTION 3 (Component)...
+// SECTION 3: Main Component & Hooks
 export default function DevLifePage() {
+  // ✅ ALL HOOKS AT THE TOP - NO CONDITIONAL HOOKS!
   const [mode, setMode] = useState("menu");
   const [currentJokeIndex, setCurrentJokeIndex] = useState(0);
   const [showPunchline, setShowPunchline] = useState(false);
@@ -275,13 +249,26 @@ export default function DevLifePage() {
 
   const [confetti, setConfetti] = useState([]);
   const [slotRolling, setSlotRolling] = useState(false);
+  const [currentFeature, setCurrentFeature] = useState(0);
 
   const currentJoke = JOKES_DATABASE[currentJokeIndex];
   const scenario = SCENARIOS[currentScenario];
+  const feature = SARCASTIC_FEATURES[currentFeature];
 
   const categories = ["All", ...new Set(JOKES_DATABASE.map(j => j.category))];
   const filteredJokes = selectedCategory === "All" ? JOKES_DATABASE : JOKES_DATABASE.filter(j => j.category === selectedCategory);
 
+  // Feature rotation effect
+  useEffect(() => {
+    if (mode === "menu") {
+      const interval = setInterval(() => {
+        setCurrentFeature((prev) => (prev + 1) % SARCASTIC_FEATURES.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [mode]);
+
+  // Confetti effect
   const triggerConfetti = () => {
     const particles = Array.from({ length: 100 }, (_, i) => ({
       id: Date.now() + i,
@@ -295,17 +282,21 @@ export default function DevLifePage() {
     setTimeout(() => setConfetti([]), 4000);
   };
 
+  // Achievement system
   const unlockAchievement = (achievementId) => {
     if (!achievements.includes(achievementId)) {
       const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
-      setAchievements([...achievements, achievementId]);
-      setShowAchievement(achievement);
-      setStats(prev => ({ ...prev, xp: prev.xp + achievement.xp }));
-      triggerConfetti();
-      setTimeout(() => setShowAchievement(null), 3000);
+      if (achievement) {
+        setAchievements([...achievements, achievementId]);
+        setShowAchievement(achievement);
+        setStats(prev => ({ ...prev, xp: prev.xp + achievement.xp }));
+        triggerConfetti();
+        setTimeout(() => setShowAchievement(null), 3000);
+      }
     }
   };
 
+  // Game over checker
   useEffect(() => {
     if (mode === "game") {
       if (stats.sanity <= 0) {
@@ -322,14 +313,16 @@ export default function DevLifePage() {
         triggerConfetti();
       }
     }
-  }, [stats, currentScenario, mode]);
+  }, [stats, currentScenario, mode, achievements]);
 
+  // Joke achievements
   useEffect(() => {
     if (likedJokes.length === 1) unlockAchievement("first_joke");
     if (likedJokes.length === 10) unlockAchievement("joke_lover");
     if (likedJokes.length === 25) unlockAchievement("joke_master");
-  }, [likedJokes]);
+  }, [likedJokes, achievements]);
 
+  // Game handlers
   const handleChoice = (choice) => {
     setLastChoice(choice);
     setShowConsequence(true);
@@ -360,6 +353,7 @@ export default function DevLifePage() {
     setLastChoice(null);
   };
 
+  // Joke handlers
   const randomJoke = () => {
     const newIndex = Math.floor(Math.random() * filteredJokes.length);
     setCurrentJokeIndex(JOKES_DATABASE.indexOf(filteredJokes[newIndex]));
@@ -398,198 +392,141 @@ export default function DevLifePage() {
       alert("Copied to clipboard! 📋");
     }
   };
+  // RENDER: MENU MODE
+  if (mode === "menu") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#0f0a1f] via-[#1e1b4b] to-[#2e1065] text-white flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity }} 
+            className="absolute top-20 left-10 w-96 h-96 bg-purple-600/30 rounded-full blur-3xl" />
+          <motion.div animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity, delay: 4 }} 
+            className="absolute bottom-20 right-10 w-96 h-96 bg-pink-600/30 rounded-full blur-3xl" />
+        </div>
 
- // MENU MODE (Enhanced with Feature Banner)
-if (mode === "menu") {
-  const [currentFeature, setCurrentFeature] = useState(0);
-  
-  const SARCASTIC_FEATURES = [
-    { text: "It's not a bug", subtext: "It's an undocumented feature! 🐛✨", icon: Bug },
-    { text: "It's not a crash", subtext: "It's a surprise restart! 💥🔄", icon: AlertTriangle },
-    { text: "It's not slow", subtext: "It's giving you time to think! 🐢💭", icon: Clock },
-    { text: "It's not broken", subtext: "It's just differently functional! 🔨🎨", icon: Wrench },
-    { text: "It's not a memory leak", subtext: "It's RAM appreciation day! 💾🎉", icon: Server },
-    { text: "It's not unresponsive", subtext: "It's meditation mode! 🧘‍♂️⏳", icon: Loader },
-    { text: "It's not outdated", subtext: "It's vintage code! 📼👴", icon: Package },
-    { text: "It's not spaghetti code", subtext: "It's Italian architecture! 🍝🏛️", icon: Code2 }
-  ];
+        {/* FEATURE BANNER */}
+        <motion.div initial={{ y: -100, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+          className="absolute top-0 left-0 right-0 z-20 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 py-4 px-4">
+            <div className="absolute inset-0 opacity-20">
+              <motion.div animate={{ x: ['-100%', '100%'] }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="h-full w-full bg-gradient-to-r from-transparent via-black to-transparent" style={{ backgroundSize: '200% 100%' }} />
+            </div>
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentFeature((prev) => (prev + 1) % SARCASTIC_FEATURES.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+            <AnimatePresence mode="wait">
+              <motion.div key={currentFeature} initial={{ opacity: 0, y: 20, rotateX: -90 }} animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                exit={{ opacity: 0, y: -20, rotateX: 90 }} transition={{ duration: 0.5 }} className="relative z-10 text-center">
+                <div className="flex items-center justify-center gap-3 mb-1">
+                  <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                    <feature.icon className="w-6 h-6 text-white" />
+                  </motion.div>
+                  <h3 className="text-xl md:text-2xl font-black text-white drop-shadow-lg">{feature.text}</h3>
+                  <motion.div animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </motion.div>
+                </div>
+                <p className="text-sm md:text-base text-white/90 font-semibold">{feature.subtext}</p>
+              </motion.div>
+            </AnimatePresence>
 
-  const feature = SARCASTIC_FEATURES[currentFeature];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0a1f] via-[#1e1b4b] to-[#2e1065] text-white flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity }} 
-          className="absolute top-20 left-10 w-96 h-96 bg-purple-600/30 rounded-full blur-3xl" />
-        <motion.div animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity, delay: 4 }} 
-          className="absolute bottom-20 right-10 w-96 h-96 bg-pink-600/30 rounded-full blur-3xl" />
-      </div>
-
-      {/* FEATURE BANNER - SARCASM ALERT! */}
-      <motion.div 
-        initial={{ y: -100, opacity: 0 }} 
-        animate={{ y: 0, opacity: 1 }}
-        className="absolute top-0 left-0 right-0 z-20 overflow-hidden"
-      >
-        <div className="relative bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 py-4 px-4">
-          {/* Animated stripe pattern */}
-          <div className="absolute inset-0 opacity-20">
-            <motion.div 
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="h-full w-full bg-gradient-to-r from-transparent via-black to-transparent"
-              style={{ backgroundSize: '200% 100%' }}
-            />
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white/50" />
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white/50" />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white/50" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white/50" />
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentFeature}
-              initial={{ opacity: 0, y: 20, rotateX: -90 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              exit={{ opacity: 0, y: -20, rotateX: 90 }}
-              transition={{ duration: 0.5 }}
-              className="relative z-10 text-center"
-            >
-              <div className="flex items-center justify-center gap-3 mb-1">
-                <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
-                >
-                  <feature.icon className="w-6 h-6 text-white" />
-                </motion.div>
-                <h3 className="text-xl md:text-2xl font-black text-white drop-shadow-lg">
-                  {feature.text}
-                </h3>
-                <motion.div
-                  animate={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
-                >
-                  <Sparkles className="w-6 h-6 text-white" />
-                </motion.div>
-              </div>
-              <p className="text-sm md:text-base text-white/90 font-semibold">
-                {feature.subtext}
-              </p>
+          <div className="flex justify-center gap-2 py-2 bg-black/20">
+            {SARCASTIC_FEATURES.map((_, index) => (
+              <motion.div key={index} animate={{ scale: currentFeature === index ? 1.2 : 1, opacity: currentFeature === index ? 1 : 0.3 }}
+                className={`w-2 h-2 rounded-full ${currentFeature === index ? 'bg-white' : 'bg-white/50'}`} />
+            ))}
+          </div>
+        </motion.div>
+
+        <div className="max-w-5xl w-full relative z-10 mt-32">
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center mb-12">
+            <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+              <Code2 className="w-28 h-28 mx-auto mb-6 text-purple-400" />
             </motion.div>
-          </AnimatePresence>
-
-          {/* Corner decorations */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white/50" />
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white/50" />
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white/50" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white/50" />
-        </div>
-
-        {/* Animated dots indicator */}
-        <div className="flex justify-center gap-2 py-2 bg-black/20">
-          {SARCASTIC_FEATURES.map((_, index) => (
-            <motion.div
-              key={index}
-              animate={{
-                scale: currentFeature === index ? 1.2 : 1,
-                opacity: currentFeature === index ? 1 : 0.3
-              }}
-              className={`w-2 h-2 rounded-full ${
-                currentFeature === index ? 'bg-white' : 'bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
-      </motion.div>
-
-      <div className="max-w-5xl w-full relative z-10 mt-32">
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center mb-12">
-          <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-            <Code2 className="w-28 h-28 mx-auto mb-6 text-purple-400" />
+            <h1 className="text-6xl md:text-8xl font-black mb-4 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+              Dev Life
+            </h1>
+            <p className="text-2xl md:text-3xl text-white/80 mb-2">Simulator 2025</p>
+            <p className="text-lg text-white/60">Choose Your Developer Adventure!</p>
           </motion.div>
-          <h1 className="text-6xl md:text-8xl font-black mb-4 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-            Dev Life
-          </h1>
-          <p className="text-2xl md:text-3xl text-white/80 mb-2">Simulator 2025</p>
-          <p className="text-lg text-white/60">Choose Your Developer Adventure!</p>
-        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <motion.button onClick={() => setMode("jokes")} whileHover={{ scale: 1.05, y: -10 }} whileTap={{ scale: 0.95 }}
-            className="relative bg-gradient-to-br from-purple-600 to-pink-600 p-8 md:p-10 rounded-3xl border-2 border-white/20 hover:border-white/40 transition-all group overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 via-pink-500/20 to-purple-600/0 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10">
-              <Sparkles className="w-20 h-20 mx-auto mb-4 group-hover:rotate-12 transition-transform" />
-              <h2 className="text-4xl font-black mb-3">Jokes & Puns</h2>
-              <p className="text-white/90 text-lg mb-4">52 hilarious developer jokes & sarcasm</p>
-              <div className="flex gap-2 justify-center flex-wrap">
-                <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🎭 Jokes</span>
-                <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">😂 Sarcasm</span>
-                <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🎰 Slot Machine</span>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <motion.button onClick={() => setMode("jokes")} whileHover={{ scale: 1.05, y: -10 }} whileTap={{ scale: 0.95 }}
+              className="relative bg-gradient-to-br from-purple-600 to-pink-600 p-8 md:p-10 rounded-3xl border-2 border-white/20 hover:border-white/40 transition-all group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 via-pink-500/20 to-purple-600/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <Sparkles className="w-20 h-20 mx-auto mb-4 group-hover:rotate-12 transition-transform" />
+                <h2 className="text-4xl font-black mb-3">Jokes & Puns</h2>
+                <p className="text-white/90 text-lg mb-4">52 hilarious developer jokes & sarcasm</p>
+                <div className="flex gap-2 justify-center flex-wrap">
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🎭 Jokes</span>
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">😂 Sarcasm</span>
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🎰 Slot Machine</span>
+                </div>
               </div>
-            </div>
-          </motion.button>
+            </motion.button>
 
-          <motion.button onClick={() => setMode("game")} whileHover={{ scale: 1.05, y: -10 }} whileTap={{ scale: 0.95 }}
-            className="relative bg-gradient-to-br from-pink-600 to-purple-600 p-8 md:p-10 rounded-3xl border-2 border-white/20 hover:border-white/40 transition-all group overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 via-purple-500/20 to-pink-600/0 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10">
-              <Rocket className="w-20 h-20 mx-auto mb-4 group-hover:translate-y-[-12px] transition-transform" />
-              <h2 className="text-4xl font-black mb-3">Career Mode</h2>
-              <p className="text-white/90 text-lg mb-4">12 realistic scenarios + achievements</p>
-              <div className="flex gap-2 justify-center flex-wrap">
-                <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🎮 Story</span>
-                <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">📊 Stats</span>
-                <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🏆 XP System</span>
+            <motion.button onClick={() => setMode("game")} whileHover={{ scale: 1.05, y: -10 }} whileTap={{ scale: 0.95 }}
+              className="relative bg-gradient-to-br from-pink-600 to-purple-600 p-8 md:p-10 rounded-3xl border-2 border-white/20 hover:border-white/40 transition-all group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 via-purple-500/20 to-pink-600/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <Rocket className="w-20 h-20 mx-auto mb-4 group-hover:translate-y-[-12px] transition-transform" />
+                <h2 className="text-4xl font-black mb-3">Career Mode</h2>
+                <p className="text-white/90 text-lg mb-4">12 realistic scenarios + achievements</p>
+                <div className="flex gap-2 justify-center flex-wrap">
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🎮 Story</span>
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">📊 Stats</span>
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">🏆 XP System</span>
+                </div>
               </div>
-            </div>
-          </motion.button>
-        </div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} 
-          className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <Sparkles className="w-8 h-8 mx-auto mb-2 text-purple-400" />
-              <p className="text-3xl font-black">52</p>
-              <p className="text-sm text-white/60">Jokes</p>
-            </div>
-            <div>
-              <Trophy className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
-              <p className="text-3xl font-black">12</p>
-              <p className="text-sm text-white/60">Scenarios</p>
-            </div>
-            <div>
-              <Award className="w-8 h-8 mx-auto mb-2 text-pink-400" />
-              <p className="text-3xl font-black">8</p>
-              <p className="text-sm text-white/60">Achievements</p>
-            </div>
-            <div>
-              <Star className="w-8 h-8 mx-auto mb-2 text-cyan-400" />
-              <p className="text-3xl font-black">∞</p>
-              <p className="text-sm text-white/60">Fun</p>
-            </div>
+            </motion.button>
           </div>
-        </motion.div>
 
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} 
-          className="mt-6 text-center text-white/50 text-sm">
-          💜 Crafted with love, coffee & bugs by Shubham Tiwari
-        </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} 
+            className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div>
+                <Sparkles className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                <p className="text-3xl font-black">52</p>
+                <p className="text-sm text-white/60">Jokes</p>
+              </div>
+              <div>
+                <Trophy className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
+                <p className="text-3xl font-black">12</p>
+                <p className="text-sm text-white/60">Scenarios</p>
+              </div>
+              <div>
+                <Award className="w-8 h-8 mx-auto mb-2 text-pink-400" />
+                <p className="text-3xl font-black">8</p>
+                <p className="text-sm text-white/60">Achievements</p>
+              </div>
+              <div>
+                <Star className="w-8 h-8 mx-auto mb-2 text-cyan-400" />
+                <p className="text-3xl font-black">∞</p>
+                <p className="text-sm text-white/60">Fun</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} 
+            className="mt-6 text-center text-white/50 text-sm">
+            💜 Crafted with love, coffee & bugs by Shubham Tiwari
+          </motion.p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-
-  // JOKES MODE (Continue next message due to length...)
+    // RENDER: JOKES MODE
   if (mode === "jokes") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f0a1f] via-[#1e1b4b] to-[#2e1065] text-white py-12 px-4 relative overflow-hidden">
+        {/* Confetti */}
         <AnimatePresence>
           {confetti.map((particle) => (
             <motion.div key={particle.id} 
@@ -603,6 +540,7 @@ if (mode === "menu") {
           ))}
         </AnimatePresence>
 
+        {/* Achievement Popup */}
         {showAchievement && (
           <motion.div initial={{ y: -100, opacity: 0 }} animate={{ y: 20, opacity: 1 }} exit={{ y: -100, opacity: 0 }}
             className="fixed top-0 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-yellow-500 to-orange-500 px-8 py-4 rounded-2xl border-2 border-white/40 shadow-2xl">
@@ -634,6 +572,7 @@ if (mode === "menu") {
             </p>
           </motion.div>
 
+          {/* Category Filter */}
           <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
             {categories.map((cat) => (
               <motion.button key={cat} onClick={() => { setSelectedCategory(cat); setCurrentJokeIndex(0); setShowPunchline(false); }}
@@ -648,8 +587,10 @@ if (mode === "menu") {
             ))}
           </div>
 
+          {/* Joke Card */}
           <AnimatePresence mode="wait">
-            <motion.div key={currentJokeIndex} initial={{ opacity: 0, scale: 0.9, rotateY: -90 }} animate={{ opacity: 1, scale: 1, rotateY: 0 }} exit={{ opacity: 0, scale: 0.9, rotateY: 90 }}
+            <motion.div key={currentJokeIndex} initial={{ opacity: 0, scale: 0.9, rotateY: -90 }} animate={{ opacity: 1, scale: 1, rotateY: 0 }} 
+              exit={{ opacity: 0, scale: 0.9, rotateY: 90 }}
               className="bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-3xl p-8 md:p-12 mb-6 relative overflow-hidden">
               
               <div className="absolute top-4 right-4 flex gap-2">
@@ -707,6 +648,7 @@ if (mode === "menu") {
             </motion.div>
           </AnimatePresence>
 
+          {/* Navigation */}
           <div className="flex items-center justify-between mb-6">
             <motion.button onClick={() => { 
               const prevIndex = filteredJokes.indexOf(currentJoke) - 1;
@@ -731,6 +673,7 @@ if (mode === "menu") {
             </motion.button>
           </div>
 
+          {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
               <Sparkles className="w-8 h-8 mx-auto mb-2 text-purple-400" />
@@ -757,8 +700,7 @@ if (mode === "menu") {
       </div>
     );
   }
-
-  // GAME MODE - Game Over Screen
+  // RENDER: GAME OVER SCREEN
   if (gameOver) {
     const getEndingMessage = () => {
       if (victory) {
@@ -828,10 +770,10 @@ if (mode === "menu") {
       </div>
     );
   }
-
-  // GAME MODE - Playing
+  // RENDER: GAME MODE - PLAYING
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0a1f] via-[#1e1b4b] to-[#2e1065] text-white py-12 px-4 relative overflow-hidden">
+      {/* Achievement Popup */}
       {showAchievement && (
         <motion.div initial={{ y: -100, opacity: 0 }} animate={{ y: 20, opacity: 1 }} exit={{ y: -100, opacity: 0 }}
           className="fixed top-0 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-yellow-500 to-orange-500 px-8 py-4 rounded-2xl border-2 border-white/40 shadow-2xl">
@@ -997,4 +939,4 @@ if (mode === "menu") {
     </div>
   );
 }
- 
+
